@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres-prod}:${DB_PORT:5432}/${DB_NAME:tempo_cargo}
+    username: ${DB_USER:tempo_admin}
+    password: ${DB_PASS:tempo_secret}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      validation-timeout: 5000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+management:
+  endpoint:
+    health:
+      db:
+        enabled: true
+      livenessstate:
+        enabled: true
+      readinessstate:
+        enabled: true

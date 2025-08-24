@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST_TEST:postgres-test}:${DB_PORT_TEST:5432}/${DB_NAME_TEST:tempo_cargo_test}
+    username: ${DB_USER:tempo_admin}
+    password: ${DB_PASS:tempo_secret}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    clean-disabled: false
+
+logging:
+  level:
+    root: WARN
+    org.springframework: INFO
