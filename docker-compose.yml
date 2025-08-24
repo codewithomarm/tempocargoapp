@@ -1,0 +1,61 @@
+version: "3.9"
+services:
+  postgres-prod:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: tempo-postgres-prod
+    environment:
+      POSTGRES_DB: ${DB_PROD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ${DB_USER} -d ${DB_PROD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata_prod:${PGDATA_PROD}
+    networks: [tempo]
+
+  postgres-test:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: tempo-postgres-test
+    environment:
+      POSTGRES_DB: ${DB_TEST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ${DB_USER} -d ${DB_TEST}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports: ["5433:5432"]
+    volumes:
+      - pgdata_test:${PGDATA_TEST}
+    networks: [tempo]
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ${APP_IMAGE}
+    container_name: tempo-api
+    depends_on:
+      postgres-prod:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres-prod
+      DB_PORT: 5432
+      DB_NAME: ${DB_PROD}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports: ["8080:8080"]
+    networks: [tempo]
+
+networks:
+  tempo: {}
+
+volumes:
+  pgdata_prod: {}
+  pgdata_test: {}
