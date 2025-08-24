@@ -1,0 +1,51 @@
+### Build / Gradle ###
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+### Logs ###
+*.log
+*.log.*
+hs_err_pid*
+replay_pid*
+
+### IDEs ###
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+### OS files ###
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+### Environment / Secrets ###
+.env
+*.env
+.env.*
+.envrc
+
+### Docker ###
+# Excluye volúmenes/data que no quieras versionar
+docker-data/
