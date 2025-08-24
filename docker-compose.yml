@@ -36,7 +36,7 @@ services:
 
   api:
     build:
-      context: ./backend
+      context: ./tempo-cargo/tempo-cargo-api
       dockerfile: Dockerfile
     image: ${APP_IMAGE}
     container_name: tempo-api
