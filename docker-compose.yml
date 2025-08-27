@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   postgres-prod:
     image: postgres:${POSTGRES_VERSION}
@@ -15,6 +14,7 @@ services:
     ports: ["5432:5432"]
     volumes:
       - pgdata_prod:${PGDATA_PROD}
+      - ./_exports:/exports
     networks: [tempo]
 
   postgres-test:
@@ -52,19 +52,6 @@ services:
       DB_PASS: ${DB_PASS}
     ports: ["8080:8080"]
     networks: [tempo]
-
-  ddl:
-    image: tempo-api:latest          # misma imagen que usas para 'api'
-    command: [ "java","-jar","/app/app.jar","--spring.profiles.active=ddl" ]
-    # Montamos una carpeta del host donde dejaremos el SQL
-    volumes:
-      - ./_ddl_out:/out
-    environment:
-      # Sobrescribimos el target del script para que vaya al volumen montado
-      SPRING_JPA_PROPERTIES_JAKARTA_PERSISTENCE_SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET: /out/V1__init.sql
-    # No dependemos de Postgres; no hace falta
-    depends_on: [ ]
-    restart: "no"
 
 networks:
   tempo: {}
