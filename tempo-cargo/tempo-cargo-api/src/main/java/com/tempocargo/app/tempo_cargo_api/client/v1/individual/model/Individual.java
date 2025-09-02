@@ -19,7 +19,8 @@ import java.util.Date;
 @Entity
 @Table(schema = "client", name = "individual",
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = "identity_number", name = "individual_identityNumber_UNIQUE")
+            @UniqueConstraint(columnNames = "identity_number", name = "individual_identityNumber_UNIQUE"),
+            @UniqueConstraint(columnNames = "name_code", name = "individual_nameCode_UNIQUE")
         },
         indexes = {
             @Index(columnList = "client_id", name = "fk_individual_client_idx"),
@@ -58,6 +59,10 @@ public class Individual {
     @NotNull(message = "Individual's dateOfBirth should not be null")
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;
+
+    @NotBlank(message = "Individual's nameCode should not be blank")
+    @Column(name = "name_code", nullable = false, length = 18)
+    private String nameCode;
 
     @NotNull(message = "Individual's createdAt should not be null")
     @Column(name = "created_at", nullable = false)
