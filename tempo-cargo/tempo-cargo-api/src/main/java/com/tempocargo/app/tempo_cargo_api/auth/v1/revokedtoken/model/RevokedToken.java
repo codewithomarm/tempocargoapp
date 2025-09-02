@@ -32,8 +32,6 @@ public class RevokedToken {
     @Column(name = "revoked_at", nullable = false)
     private LocalDateTime revokedAt;
 
-    private String reason;
-
     @PrePersist
     public void prePersist() {
         initializerTimestamps();

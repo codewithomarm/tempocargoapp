@@ -16,6 +16,9 @@ import java.time.temporal.ChronoUnit;
 @Data
 @Entity
 @Table(schema = "client", name = "client",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = "po_box_number", name = "client_poBoxNumber_UNIQUE")
+        },
         indexes = {
             @Index(columnList = "type_id", name = "fk_client_client_type_idx"),
             @Index(columnList = "referred_by_client_id", name = "fk_client_client_idx")
@@ -25,6 +28,10 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull(message = "Client's poBoxNumber should not be null")
+    @Column(name = "po_box_number", nullable = false)
+    private Integer poBoxNumber;
 
     @NotBlank(message = "Client's phoneNumberPrimary should not be blank")
     @Column(name = "phone_number_pri", nullable = false, length = 20)

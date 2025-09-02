@@ -79,9 +79,9 @@ public class TempoUser {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @NotNull(message = "User's modifiedAt should not be null")
-    @Column(name = "modified_at", nullable = false)
-    private LocalDateTime modifiedAt;
+    @NotNull(message = "User's updatedAt should not be null")
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {
@@ -102,8 +102,8 @@ public class TempoUser {
             createdAt = now;
         }
 
-        if (modifiedAt == null) {
-            modifiedAt = now;
+        if (updatedAt == null) {
+            updatedAt = now;
         }
     }
 }

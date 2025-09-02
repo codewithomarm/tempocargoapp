@@ -1,8 +1,10 @@
 package com.tempocargo.app.tempo_cargo_api.shipping.v1.tempopackage.model;
 
 import com.tempocargo.app.tempo_cargo_api.client.v1.client.model.Client;
+import com.tempocargo.app.tempo_cargo_api.client.v1.deliveryaddress.model.DeliveryAddress;
 import com.tempocargo.app.tempo_cargo_api.shipping.v1.packagestatus.model.PackageStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +18,12 @@ import java.time.temporal.ChronoUnit;
 @Data
 @Entity
 @Table(schema = "shipping", name = "tempo_package",
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = "tracking_number", name = "tempo_package_trackingNumber_UNIQUE")
+        },
         indexes = {
             @Index(columnList = "client_id", name = "fk_tempo_package_client_idx"),
+            @Index(columnList = "delivery_address_id", name = "fk_tempo_package_delivery_address_idx"),
             @Index(columnList = "package_status_id", name = "fk_tempo_package_package_status_idx")
         })
 public class TempoPackage {
@@ -32,7 +38,12 @@ public class TempoPackage {
                 foreignKey = @ForeignKey(name = "fk_tempo_package_client"))
     private Client client;
 
-    @Column(name = "tracking_number", length = 30)
+    @ManyToOne
+    @JoinColumn(name = "delivery_address_id", foreignKey = @ForeignKey(name = "fk_tempo_package_delivery_address"))
+    private DeliveryAddress deliveryAddress;
+
+    @NotBlank(message = "TempoPackage's trackingNumber should not be blank")
+    @Column(name = "tracking_number", nullable = false, length = 30)
     private String trackingNumber;
 
     @ManyToOne
