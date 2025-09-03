@@ -5,25 +5,29 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(schema = "depot", name = "warehouse_us",
-        uniqueConstraints = {
-            @UniqueConstraint(columnNames = "warehouse_address_id", name = "fk_warehouse_us_warehouseAddressId_UNIQUE")
-        },
         indexes = {
             @Index(columnList = "warehouse_address_id", name = "fk_warehouse_us_warehouse_address_idx")
         })
 public class WarehouseUS {
 
-    @OneToOne
+    @Id
+    @Column(name = "warehouse_address_id")
+    private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @MapsId
     @NotNull(message = "WarehouseUS's warehouseAddress should not be null")
-    @JoinColumn(name = "warehouse_address_id", nullable = false,
+    @JoinColumn(name = "warehouse_address_id", nullable = false, referencedColumnName = "id",
                 foreignKey = @ForeignKey(name = "fk_warehouse_us_warehouse_address"))
     private WarehouseAddress warehouseAddress;
 
