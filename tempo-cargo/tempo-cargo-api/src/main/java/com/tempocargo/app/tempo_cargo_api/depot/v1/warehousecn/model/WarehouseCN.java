@@ -13,17 +13,19 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(schema = "depot", name = "warehouse_cn",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "warehouse_address_id", name = "fk_warehouse_cn_warehouseAddressId_UNIQUE")
-        },
         indexes = {
                 @Index(columnList = "warehouse_address_id", name = "fk_warehouse_cn_warehouse_address_idx")
         })
 public class WarehouseCN {
 
+    @Id
+    @Column(name = "warehouse_address_id")
+    private Long id;
+
     @OneToOne
+    @MapsId
     @NotNull(message = "WarehouseCN's warehouseAddress should not be null")
-    @JoinColumn(name = "warehouse_address_id", nullable = false,
+    @JoinColumn(name = "warehouse_address_id", nullable = false, referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_warehouse_cn_warehouse_address"))
     private WarehouseAddress warehouseAddress;
 
