@@ -2,6 +2,7 @@ package com.tempocargo.app.tempo_cargo_api.shipping.v1.tempopackage.model;
 
 import com.tempocargo.app.tempo_cargo_api.client.v1.client.model.Client;
 import com.tempocargo.app.tempo_cargo_api.client.v1.deliveryaddress.model.DeliveryAddress;
+import com.tempocargo.app.tempo_cargo_api.depot.v1.warehouseaddress.model.WarehouseAddress;
 import com.tempocargo.app.tempo_cargo_api.shipping.v1.packagestatus.model.PackageStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -23,6 +24,7 @@ import java.time.temporal.ChronoUnit;
         },
         indexes = {
             @Index(columnList = "client_id", name = "fk_tempo_package_client_idx"),
+            @Index(columnList = "warehouse_address_id", name = "fk_tempo_package_warehouse_address_idx"),
             @Index(columnList = "delivery_address_id", name = "fk_tempo_package_delivery_address_idx"),
             @Index(columnList = "package_status_id", name = "fk_tempo_package_package_status_idx")
         })
@@ -37,6 +39,12 @@ public class TempoPackage {
     @JoinColumn(name = "client_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_tempo_package_client"))
     private Client client;
+
+    @ManyToOne
+    @NotNull(message = "TempoPackage's warehouseAddress should not be null")
+    @JoinColumn(name = "warehouse_address_id", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_tempo_package_warehouse_address"))
+    private WarehouseAddress warehouseAddress;
 
     @ManyToOne
     @JoinColumn(name = "delivery_address_id", foreignKey = @ForeignKey(name = "fk_tempo_package_delivery_address"))
