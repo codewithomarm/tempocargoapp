@@ -14,7 +14,6 @@ services:
     ports: ["5432:5432"]
     volumes:
       - pgdata_prod:${PGDATA_PROD}
-      - ./_exports:/exports
     networks: [tempo]
 
   postgres-test:
@@ -50,6 +49,7 @@ services:
       DB_NAME: ${DB_PROD}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      JWT_SECRET: ${JWT_SECRET:-change-me-32+chars}
     ports: ["8080:8080"]
     networks: [tempo]
 
