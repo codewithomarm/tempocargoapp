@@ -37,7 +37,7 @@ public class TempoUser {
     private Client client;
 
     @NotBlank(message = "User's username should not be blank")
-    @Column(name = "username", nullable = false, length = 20)
+    @Column(name = "username", nullable = false, length = 30)
     private String username;
 
     @NotBlank(message = "User's passwordHash should not be blank")
