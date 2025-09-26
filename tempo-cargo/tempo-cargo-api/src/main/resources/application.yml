@@ -30,6 +30,11 @@ spring:
             jwt:
               secret: ${JWT_SECRET:change-me-32+chars}
 
+jwt:
+  secret: ${JWT_SECRET:change-me-32+chars}
+  accessTokenValiditySec: ${JWT_ACCESS_TOKEN_VALIDITY_SEC:900}
+  refreshTokenValiditySec: ${JWT_REFRESH_TOKEN_VALIDITY_SEC:1209600}
+
 server:
   port: 8080
   forward-headers-strategy: framework
@@ -47,5 +52,6 @@ management:
 logging:
   level:
     org.springframework: INFO
+    org.springframework.security: TRACE
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql: WARN
