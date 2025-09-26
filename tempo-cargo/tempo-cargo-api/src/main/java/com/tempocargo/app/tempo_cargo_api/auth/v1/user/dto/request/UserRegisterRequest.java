@@ -20,7 +20,6 @@ public class UserRegisterRequest {
     private String username;
 
     @NotBlank(message = "UserRegisterRequest's password should not be blank")
-    @Size
     @Pattern(
             regexp = "^(?!.*[._-]{2})[a-z0-9]+(?:[._-][a-z0-9]+)*$",
             message = "UserRegisterRequest's password can only be lowercase, digits and . _ -." +
