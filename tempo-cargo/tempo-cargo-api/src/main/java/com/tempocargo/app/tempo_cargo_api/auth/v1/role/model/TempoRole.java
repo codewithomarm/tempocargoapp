@@ -3,6 +3,7 @@ package com.tempocargo.app.tempo_cargo_api.auth.v1.role.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
         uniqueConstraints = {
             @UniqueConstraint(columnNames = "name", name = "role_name_UNIQUE")
         })
+@Builder
 public class TempoRole {
 
     @Id

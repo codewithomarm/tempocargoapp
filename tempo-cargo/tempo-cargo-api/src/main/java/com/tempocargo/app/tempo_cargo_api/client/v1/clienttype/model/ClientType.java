@@ -3,6 +3,7 @@ package com.tempocargo.app.tempo_cargo_api.client.v1.clienttype.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
             @UniqueConstraint(columnNames = "code", name = "client_type_code_UNIQUE"),
             @UniqueConstraint(columnNames = "display_name", name = "client_type_displayName_UNIQUE")
         })
+@Builder
 public class ClientType {
 
     @Id
