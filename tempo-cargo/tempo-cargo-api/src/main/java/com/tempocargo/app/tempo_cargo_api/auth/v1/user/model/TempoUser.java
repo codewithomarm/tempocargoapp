@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit;
         indexes = {
             @Index(columnList = "client_id", name = "fk_user_client_idx")
         })
+@Builder
 public class TempoUser {
 
     @Id
@@ -48,18 +50,22 @@ public class TempoUser {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Builder.Default
     @NotNull(message = "User's emailConfirmed should not be null")
     @Column(name = "email_confirmed", nullable = false)
     private Boolean emailConfirmed = false;
 
+    @Builder.Default
     @NotNull(message = "User's accountNonLocked should not be null")
     @Column(name = "account_non_locked", nullable = false)
-    private Boolean accountNonLocked = false;
+    private Boolean accountNonLocked = true;
 
+    @Builder.Default
     @NotNull(message = "User's enabled should not be null")
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
+    @Builder.Default
     @Column(name = "login_attempts")
     private int loginAttempts = 0;
 

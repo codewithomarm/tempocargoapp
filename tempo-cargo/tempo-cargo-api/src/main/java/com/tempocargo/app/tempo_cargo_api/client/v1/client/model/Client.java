@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,7 @@ import java.time.temporal.ChronoUnit;
             @Index(columnList = "type_id", name = "fk_client_client_type_idx"),
             @Index(columnList = "referred_by_client_id", name = "fk_client_client_idx")
         })
+@Builder
 public class Client {
 
     @Id

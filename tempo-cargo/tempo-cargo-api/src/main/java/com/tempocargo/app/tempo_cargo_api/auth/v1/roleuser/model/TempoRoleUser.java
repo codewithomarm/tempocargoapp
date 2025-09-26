@@ -23,6 +23,7 @@ import org.hibernate.annotations.OnDeleteAction;
             @Index(columnList = "role_id", name = "fk_role_user_role_idx"),
             @Index(columnList = "user_id", name = "fk_role_user_user_idx")
         })
+@Builder
 public class TempoRoleUser {
 
     @Id

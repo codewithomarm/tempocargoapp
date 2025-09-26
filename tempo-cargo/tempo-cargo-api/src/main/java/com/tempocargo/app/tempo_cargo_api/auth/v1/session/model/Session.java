@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -25,6 +26,7 @@ import java.time.temporal.ChronoUnit;
         indexes = {
             @Index(columnList = "user_id", name = "fk_session_user_idx")
         })
+@Builder
 public class Session {
 
     @Id
@@ -58,6 +60,7 @@ public class Session {
     @Column(name = "last_activity_at", nullable = false)
     private LocalDateTime lastActivityAt;
 
+    @Builder.Default
     @NotNull(message = "Session´s isActive should not be null")
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

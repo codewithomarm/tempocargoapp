@@ -6,12 +6,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +27,7 @@ import java.util.Date;
             @Index(columnList = "client_id", name = "fk_individual_client_idx"),
             @Index(columnList = "identity_type_id", name = "fk_individual_identity_type_idx")
         })
+@Builder
 public class Individual {
 
     @Id
@@ -58,7 +60,7 @@ public class Individual {
 
     @NotNull(message = "Individual's dateOfBirth should not be null")
     @Column(name = "date_of_birth", nullable = false)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @NotBlank(message = "Individual's nameCode should not be blank")
     @Column(name = "name_code", nullable = false, length = 18)
