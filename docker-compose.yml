@@ -41,6 +41,7 @@ services:
     restart: unless-stopped
     ports:
       - "25:25"
+      - "465:465"
       - "587:587"
       - "993:993"
     networks:
@@ -49,6 +50,7 @@ services:
       - ./mailserver/maildata:/var/mail
       - ./mailserver/mailstate:/var/mail-state
       - ./mailserver/config/:/tmp/docker-mailserver/
+      - ./letsencrypt:/etc/letsencrypt:ro
     environment:
       - ONE_DIR=1
       - ENABLE_SPAMASSASSIN=1
@@ -75,7 +77,20 @@ services:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       JWT_SECRET: ${JWT_SECRET:-change-me-32+chars}
-    ports: ["8080:8080"]
+    expose: ["8080"]
+    networks: [tempo]
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP
+      - "81:81"    # Admin UI
+      - "443:443"  # HTTPS
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     networks: [tempo]
 
 networks:
