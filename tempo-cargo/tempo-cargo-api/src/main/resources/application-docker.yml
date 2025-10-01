@@ -22,14 +22,14 @@ spring:
     locations: classpath:db/migration
 
   mail:
-    host: mailserver
+    host: mail.tempocargo.lat
     port: 587
     username: no-reply@tempocargo.lat
     password: SuperPassword123!
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-      mail.smtp.starttls.required: true
+      mail.smtp.ssl.enable: false
 
 management:
   endpoint:
