@@ -30,6 +30,7 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.enable: false
+      mail.smtp.from: no-reply@tempocargo.lat
 
 management:
   endpoint:
