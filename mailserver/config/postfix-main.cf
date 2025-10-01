@@ -3,4 +3,5 @@ smtpd_tls_cert_file=/etc/letsencrypt/live/mail.tempocargo.lat/fullchain.pem
 smtpd_tls_key_file=/etc/letsencrypt/live/mail.tempocargo.lat/privkey.pem
 smtpd_use_tls=yes
 smtpd_tls_auth_only=yes
+smtpd_recipient_restrictions = permit_sasl_authenticated, reject_unauth_destination
 mynetworks = 127.0.0.0/8 172.18.0.0/16
