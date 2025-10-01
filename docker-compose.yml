@@ -33,6 +33,31 @@ services:
       - pgdata_test:${PGDATA_TEST}
     networks: [tempo]
 
+  mailserver:
+    image: docker.io/mailserver/docker-mailserver:latest
+    container_name: mailserver
+    hostname: mail
+    domainname: tempocargo.lat
+    restart: unless-stopped
+    ports:
+      - "25:25"
+      - "587:587"
+      - "993:993"
+    networks:
+      [tempo]
+    volumes:
+      - ./mailserver/maildata:/var/mail
+      - ./mailserver/mailstate:/var/mail-state
+      - ./mailserver/config/:/tmp/docker-mailserver/
+    environment:
+      - ONE_DIR=1
+      - ENABLE_SPAMASSASSIN=1
+      - ENABLE_CLAMAV=0
+      - ENABLE_FAIL2BAN=1
+      - DMS_DEBUG=0
+    cap_add:
+      - NET_ADMIN
+
   api:
     build:
       context: ./tempo-cargo/tempo-cargo-api
