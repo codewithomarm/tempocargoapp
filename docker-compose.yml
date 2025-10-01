@@ -66,6 +66,8 @@ services:
       dockerfile: Dockerfile
     image: ${APP_IMAGE}
     container_name: tempo-api
+    hostname: api
+    domainname: tempocargo.lat
     depends_on:
       postgres-prod:
         condition: service_healthy

@@ -4,4 +4,6 @@ smtpd_tls_key_file=/etc/letsencrypt/live/mail.tempocargo.lat/privkey.pem
 smtpd_use_tls=yes
 smtpd_tls_auth_only=yes
 smtpd_recipient_restrictions = permit_sasl_authenticated, reject_unauth_destination
+smtpd_helo_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_invalid_helo_hostname, reject_non_fqdn_helo_hostname
 mynetworks = 127.0.0.0/8 172.18.0.0/16
+mydestination = localhost, localhost.localdomain, tempocargo.lat, mail.tempocargo.lat, api.tempocargo.lat
