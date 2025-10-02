@@ -33,36 +33,6 @@ services:
       - pgdata_test:${PGDATA_TEST}
     networks: [tempo]
 
-  mailserver:
-    image: docker.io/mailserver/docker-mailserver:latest
-    container_name: mailserver
-    hostname: mail
-    domainname: tempocargo.lat
-    restart: unless-stopped
-    ports:
-      - "25:25"
-      - "465:465"
-      - "587:587"
-      - "993:993"
-    networks:
-      [tempo]
-    volumes:
-      - ./mailserver/maildata:/var/mail
-      - ./mailserver/mailstate:/var/mail-state
-      - ./mailserver/config/:/tmp/docker-mailserver/
-      - ./letsencrypt:/etc/letsencrypt:ro
-    environment:
-      - ONE_DIR=1
-      - ENABLE_SPAMASSASSIN=1
-      - ENABLE_CLAMAV=0
-      - ENABLE_FAIL2BAN=1
-      - DMS_DEBUG=0
-      - SSL_TYPE=manual
-      - SSL_CERT_PATH=/etc/letsencrypt/live/npm-2/fullchain.pem
-      - SSL_KEY_PATH=/etc/letsencrypt/live/npm-2/privkey.pem
-    cap_add:
-      - NET_ADMIN
-
   api:
     build:
       context: ./tempo-cargo/tempo-cargo-api
@@ -81,6 +51,7 @@ services:
       DB_NAME: ${DB_PROD}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       JWT_SECRET: ${JWT_SECRET:-change-me-32+chars}
     expose: ["8080"]
     networks: [tempo]

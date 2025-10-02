@@ -48,4 +48,4 @@ $RECYCLE.BIN/
 
 ### Docker ###
 # Excluye volúmenes/data que no quieras versionar
-docker-data/
+docker-data/sendgrid.env

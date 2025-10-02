@@ -1,3 +1,0 @@
-mail._domainkey	IN	TXT	( "v=DKIM1; h=sha256; k=rsa; "
-	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA50NNBppgGbo0qROMYOVCplDuRIXVw1AkV2u3AnZMFEASuMBXjatWMCqyW406LLv5aldPjGouJbDrLqNNcmCkbVSZyUEb22M1Pxr/yg4PVRzVx/oatg+ZioMjR6mmT+M6yHdt4NtKY4p0uRaCjonrVVonPcqkels25dBW8iLbgMnFcDfWx+YbEBuWJD15XxsiC3evmtBHCl0Xuk"
-	  "tHyh2/p4hC3fN7ewdKR0J6aXzKKQCLNZTiq2ykiyz2LaIP3yANs2CFv2xvikmNJ95+YIZRieq7aHUO3C3c9zrH+nCYSaI2qnbCcwBp/0p+1UaB8wHuNt/8fJUFWLMJUvbZJv/UWwIDAQAB" )  ; ----- DKIM key mail for tempocargo.lat

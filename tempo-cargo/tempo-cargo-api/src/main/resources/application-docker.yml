@@ -21,18 +21,8 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-  mail:
-    host: mail.tempocargo.lat
-    port: 587
-    username: no-reply@tempocargo.lat
-    password: SuperPassword123!
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.starttls.required: true
-      mail.smtp.ssl.enable: false
-      mail.smtp.from: no-reply@tempocargo.lat
-      mail.smtp.localhost: api.tempocargo.lat
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
 
 management:
   endpoint:
