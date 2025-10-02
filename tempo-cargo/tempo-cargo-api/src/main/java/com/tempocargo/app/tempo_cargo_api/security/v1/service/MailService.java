@@ -17,7 +17,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MailService {
 
-    @Value("${sendgrid.api-key}")
+    @Value("${SENDGRID_API_KEY}")
     private String sendgridApiKey;
 
     public void sendTestMail(String toEmail) throws IOException {
