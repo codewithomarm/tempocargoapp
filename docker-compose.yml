@@ -39,6 +39,8 @@ services:
       dockerfile: Dockerfile
     image: ${APP_IMAGE}
     container_name: tempo-api
+    hostname: api
+    domainname: tempocargo.lat
     depends_on:
       postgres-prod:
         condition: service_healthy
@@ -49,8 +51,22 @@ services:
       DB_NAME: ${DB_PROD}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       JWT_SECRET: ${JWT_SECRET:-change-me-32+chars}
-    ports: ["8080:8080"]
+    expose: ["8080"]
+    networks: [tempo]
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP
+      - "81:81"    # Admin UI
+      - "443:443"  # HTTPS
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     networks: [tempo]
 
 networks:

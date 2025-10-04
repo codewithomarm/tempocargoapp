@@ -21,6 +21,9 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY}
+
 management:
   endpoint:
     health:
