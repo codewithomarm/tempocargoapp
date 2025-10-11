@@ -15,13 +15,27 @@ import com.tempocargo.app.tempo_cargo_api.client.v1.clienttype.repository.Client
 import com.tempocargo.app.tempo_cargo_api.client.v1.identitytype.repository.IdentityTypeRepository;
 import com.tempocargo.app.tempo_cargo_api.client.v1.individual.model.Individual;
 import com.tempocargo.app.tempo_cargo_api.client.v1.individual.repository.IndividualRepository;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.InvalidUsernameException;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.ResourceNotFoundException;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.WeakPasswordException;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.EmailVerificationRequest;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.OtpVerificationRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterRequest;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.EmailVerificationResponse;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.OtpVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterResponse;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.ResourceAlreadyExistsException;
+import com.tempocargo.app.tempo_cargo_api.security.v1.jwt.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
@@ -39,9 +53,57 @@ public class RegisterService {
     private final TempoRoleRepository tempoRoleRepository;
     private final TempoRoleUserRepository tempoRoleUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MailService mailService;
+
+    public EmailVerificationResponse emailVerification(EmailVerificationRequest request) throws IOException {
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (tempoUserRepository.existsByEmail(email)) {
+            throw new ResourceAlreadyExistsException("Email already exists: " + email);
+        }
+
+        String otp = String.format("%06d", new SecureRandom().nextInt(999999));
+
+        String token = jwtTokenProvider.generateEmailVerificationToken(email, otp);
+
+        mailService.sendEmailVerificationOtp(email, otp);
+
+        return new EmailVerificationResponse(
+                "Verification code sent to your email", token,
+                jwtTokenProvider.getEmailVerificationTokenExpiryInstant().getEpochSecond());
+    }
+
+    public OtpVerificationResponse otpVerification(OtpVerificationRequest request) {
+        Jws<Claims> jws = jwtTokenProvider.parseToken(request.getEmailVerificationToken());
+        Claims claims = jws.getBody();
+        String emailFromToken = claims.getSubject();
+        String otpFromToken = claims.get("otp", String.class);
+        String type = claims.get("type", String.class);
+
+        if (!"EMAIL_VERIFICATION".equals(emailFromToken)) {
+            throw new IllegalArgumentException("Invalid token type");
+        }
+
+        String cleanRequestEmail = request.getEmail().trim().toLowerCase();
+
+        if (!emailFromToken.equals(cleanRequestEmail) || !otpFromToken.equals(request.getOtp())) {
+            throw new IllegalArgumentException("Invalid email or OTP");
+        }
+
+        String verifiedToken = jwtTokenProvider.generateEmailVerifiedToken(cleanRequestEmail);
+
+        return new OtpVerificationResponse("Email verified successfully", verifiedToken);
+    }
 
     @Transactional
-    public RegisterResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request, HttpServletRequest servletRequest) {
+        String email = jwtTokenProvider.validateEmailVerifiedToken(servletRequest);
+
+        if (tempoUserRepository.existsByEmail(email)) {
+            throw new ResourceAlreadyExistsException("Email already exists: " + email);
+        }
+
         Client clientBuilder = buildClient(request);
         Client clientEntity = clientRepository.save(clientBuilder);
 
@@ -57,7 +119,7 @@ public class RegisterService {
             businessEntity = businessRepository.save(businessBuilder);
         }
 
-        TempoUser userBuilder = buildUser(request.getUser(), clientEntity);
+        TempoUser userBuilder = buildUser(request.getUser(), clientEntity, email);
         TempoUser userEntity = tempoUserRepository.save(userBuilder);
 
         TempoRole customerRole = tempoRoleRepository.findByName("CUSTOMER")
@@ -103,12 +165,14 @@ public class RegisterService {
 
         ClientType clientType = clientTypeRepository
                 .findByCode(String.valueOf(request.getClient().getClientTypeCode()))
-                .orElseThrow(() -> new RuntimeException("ClientType not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("ClientType not found: " +
+                        String.valueOf(request.getClient().getClientTypeCode())));
         builder.type(clientType);
 
         if (request.getClient().getReferredByClientId() != null) {
             Client referredByClientEntity = clientRepository.findById(request.getClient().getReferredByClientId())
-                    .orElseThrow(() -> new RuntimeException("ReferredBy Client not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("ReferredByClientId not found: " +
+                            request.getClient().getReferredByClientId()));
 
             builder.referredBy(referredByClientEntity);
         }
@@ -118,7 +182,8 @@ public class RegisterService {
 
     private Individual buildIndividual(RegisterRequest.IndividualDTO request, Client client) {
         if (individualRepository.existsByIdentityNumber(request.getIdentityNumber())) {
-            throw new RuntimeException("Identity Number already exists: " + request.getIdentityNumber());
+            throw new ResourceAlreadyExistsException("Identity Number already exists: "
+                    + request.getIdentityNumber());
         }
 
         return Individual.builder()
@@ -128,7 +193,8 @@ public class RegisterService {
                 .dateOfBirth(request.getDateOfBirth())
                 .nameCode(generateIndividualNameCode(request.getFirstName(), request.getLastName()))
                 .identityType(identityTypeRepository.findById(request.getIdentityTypeId())
-                        .orElseThrow(() -> new RuntimeException("IdentityType not found with id: " + request.getIdentityTypeId())))
+                        .orElseThrow(() -> new ResourceNotFoundException("IdentityType not found with id: "
+                                + request.getIdentityTypeId())))
                 .identityNumber(request.getIdentityNumber())
                 .build();
     }
@@ -160,11 +226,11 @@ public class RegisterService {
 
     private Business buildBusiness(RegisterRequest.BusinessDTO request, Client client) {
         if (businessRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Business Name already exists: " + request.getName());
+            throw new ResourceAlreadyExistsException("Business Name already exists: " + request.getName());
         }
 
         if (businessRepository.existsByRucNumber(request.getRucNumber())) {
-            throw new RuntimeException("Business rucNumber already exists: " + request.getRucNumber());
+            throw new ResourceAlreadyExistsException("Business rucNumber already exists: " + request.getRucNumber());
         }
 
         return Business.builder()
@@ -230,23 +296,18 @@ public class RegisterService {
         return businessNameCode + " " + (maxSuffix + 1);
     }
 
-    private TempoUser buildUser(RegisterRequest.UserDTO request, Client client) {
+    private TempoUser buildUser(RegisterRequest.UserDTO request, Client client, String email) {
         String username = request.getUsername().trim().toLowerCase();
         if (!username.matches("^[a-zA-Z0-9_]+$")) {
-            throw new RuntimeException("Username contains invalid characters");
+            throw new InvalidUsernameException("Username contains invalid characters");
         }
         if (tempoUserRepository.existsByUsername(username)) {
-            throw new RuntimeException("Username already exists: " + request.getUsername());
-        }
-
-        String email = request.getEmail().trim().toLowerCase();
-        if (tempoUserRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already exists: " + request.getEmail());
+            throw new ResourceAlreadyExistsException("Username already exists: " + request.getUsername());
         }
 
         String password = request.getPassword();
         if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#.])[A-Za-z\\d@$!%*?&#.]{8,64}$")) {
-            throw new RuntimeException("Password must contain upper, lower, digit, and special character");
+            throw new WeakPasswordException("Password must contain upper, lower, digit, and special character");
         }
 
         return TempoUser.builder()
