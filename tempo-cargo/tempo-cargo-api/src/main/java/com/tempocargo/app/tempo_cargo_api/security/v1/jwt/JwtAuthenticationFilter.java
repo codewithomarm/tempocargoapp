@@ -55,6 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Jws<Claims> parsed = jwtTokenProvider.parseToken(token);
             Claims claims = parsed.getBody();
 
+            String type = claims.get("type", String.class);
+            if (type != null && !"ACCESS".equals(type)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             String username = claims.getSubject();
             if (username == null || username.isBlank()) {
                 filterChain.doFilter(request, response);
