@@ -113,8 +113,5 @@ public class RegisterRequest {
 
         @NotBlank(message = "RegisterRequest's User's password should not be blank")
         private String password;
-
-        @Email
-        private String email;
     }
 }
