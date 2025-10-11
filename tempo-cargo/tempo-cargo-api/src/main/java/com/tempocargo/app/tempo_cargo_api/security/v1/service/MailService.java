@@ -45,7 +45,7 @@ public class MailService {
         Context context = new Context();
         context.setVariable("otp", otp);
 
-        String htmlContent = templateEngine.process("otp-email-verification", context);
+        String htmlContent = templateEngine.process("emails/otp-email-verification", context);
 
         Email from = new Email("no-reply@tempocargo.lat");
         String subject = "Tempo Cargo Registration OTP";

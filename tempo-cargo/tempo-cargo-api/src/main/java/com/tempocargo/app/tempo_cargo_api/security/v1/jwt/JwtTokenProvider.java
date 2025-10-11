@@ -28,10 +28,10 @@ public class JwtTokenProvider {
     @Value("${jwt.refreshTokenValiditySec:1209600}")
     private long refreshTokenValiditySec;
 
-    @Value("${jwt.emailVerificationTokenValiditySec:300}")
+    @Value("${jwt.emailVerificationTokenValiditySec:600}")
     private long emailVerificationTokenValiditySec;
 
-    @Value("${jwt.emailVerifiedTokenValiditySec:600}")
+    @Value("${jwt.emailVerifiedTokenValiditySec:900}")
     private long emailVerifiedTokenValiditySec;
 
     private Key signingKey;

@@ -81,14 +81,14 @@ public class RegisterService {
         String otpFromToken = claims.get("otp", String.class);
         String type = claims.get("type", String.class);
 
-        if (!"EMAIL_VERIFICATION".equals(emailFromToken)) {
-            throw new IllegalArgumentException("Invalid token type");
+        if (!"EMAIL_VERIFICATION".equals(type)) {
+            throw new InvalidVerificationTokenException("Invalid token type");
         }
 
         String cleanRequestEmail = request.getEmail().trim().toLowerCase();
 
         if (!emailFromToken.equals(cleanRequestEmail) || !otpFromToken.equals(request.getOtp())) {
-            throw new IllegalArgumentException("Invalid email or OTP");
+            throw new InvalidVerificationTokenException("Invalid email or OTP");
         }
 
         String verifiedToken = jwtTokenProvider.generateEmailVerifiedToken(cleanRequestEmail);
