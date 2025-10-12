@@ -15,16 +15,13 @@ import com.tempocargo.app.tempo_cargo_api.client.v1.clienttype.repository.Client
 import com.tempocargo.app.tempo_cargo_api.client.v1.identitytype.repository.IdentityTypeRepository;
 import com.tempocargo.app.tempo_cargo_api.client.v1.individual.model.Individual;
 import com.tempocargo.app.tempo_cargo_api.client.v1.individual.repository.IndividualRepository;
-import com.tempocargo.app.tempo_cargo_api.common.v1.exception.InvalidUsernameException;
-import com.tempocargo.app.tempo_cargo_api.common.v1.exception.ResourceNotFoundException;
-import com.tempocargo.app.tempo_cargo_api.common.v1.exception.WeakPasswordException;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.*;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.EmailVerificationRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.OtpVerificationRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.EmailVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.OtpVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterResponse;
-import com.tempocargo.app.tempo_cargo_api.common.v1.exception.ResourceAlreadyExistsException;
 import com.tempocargo.app.tempo_cargo_api.security.v1.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -82,7 +79,7 @@ public class RegisterService {
         String type = claims.get("type", String.class);
 
         if (!"EMAIL_VERIFICATION".equals(type)) {
-            throw new InvalidVerificationTokenException("Invalid token type");
+            throw new InvalidVerificationTokenException("Invalid token type: " + type);
         }
 
         String cleanRequestEmail = request.getEmail().trim().toLowerCase();
