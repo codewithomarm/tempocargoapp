@@ -18,9 +18,11 @@ import com.tempocargo.app.tempo_cargo_api.client.v1.individual.repository.Indivi
 import com.tempocargo.app.tempo_cargo_api.common.v1.exception.*;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.EmailVerificationRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.OtpVerificationRequest;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterAdminRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.EmailVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.OtpVerificationResponse;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterAdminResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
@@ -153,7 +156,7 @@ public class RegisterService {
 
     private Client buildClient(RegisterRequest request){
         Client.ClientBuilder builder = Client.builder()
-                .poBoxNumber(Math.toIntExact(clientRepository.getNextPoBoxNumber()))
+                .poBoxNumber(generatePoBoxNumber())
                 .phoneNumberPrimary(request.getClient().getPhoneNumberPrimary());
 
         if (request.getClient().getPhoneNumberSecondary() != null) {
@@ -294,24 +297,91 @@ public class RegisterService {
     }
 
     private TempoUser buildUser(RegisterRequest.UserDTO request, Client client, String email) {
-        String username = request.getUsername().trim().toLowerCase();
+        String validUsername = validateUsername(request.getUsername());
+
+        String validPassword = validatePassword(request.getPassword());
+
+        return TempoUser.builder()
+                .client(client)
+                .username(validUsername)
+                .passwordHash(passwordEncoder.encode(validPassword))
+                .email(email)
+                .build();
+    }
+
+    private Integer generatePoBoxNumber() {
+        return Math.toIntExact(clientRepository.getNextPoBoxNumber());
+    }
+
+    private String validateUsername(String username) {
+        String cleanUsername = username.trim().toLowerCase();
         if (!username.matches("^[a-zA-Z0-9_]+$")) {
             throw new InvalidUsernameException("Username contains invalid characters");
         }
         if (tempoUserRepository.existsByUsername(username)) {
-            throw new ResourceAlreadyExistsException("Username already exists: " + request.getUsername());
+            throw new ResourceAlreadyExistsException("Username already exists: " + username);
         }
+        return cleanUsername;
+    }
 
-        String password = request.getPassword();
+    private String validatePassword(String password) {
         if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#.])[A-Za-z\\d@$!%*?&#.]{8,64}$")) {
             throw new WeakPasswordException("Password must contain upper, lower, digit, and special character");
         }
+        return password;
+    }
 
-        return TempoUser.builder()
-                .client(client)
-                .username(username)
-                .passwordHash(passwordEncoder.encode(password))
-                .email(email)
+    @Transactional
+    public RegisterAdminResponse registerAdmin(RegisterAdminRequest request) {
+        ClientType indvClientType = clientTypeRepository.findByCode("INDV")
+                .orElseThrow(() -> new ResourceNotFoundException("clientType not found: INDV"));
+
+        Client adminClient = Client.builder()
+                .poBoxNumber(generatePoBoxNumber())
+                .phoneNumberPrimary("+507 0000-0000")
+                .type(indvClientType)
+                .build();
+        Client entityAdminClient = clientRepository.save(adminClient);
+
+        String validUsername = validateUsername(request.getUsername());
+
+        String validPassword = validatePassword(request.getPassword());
+
+        TempoUser adminUser = TempoUser.builder()
+                .client(entityAdminClient)
+                .username(validUsername)
+                .passwordHash(passwordEncoder.encode(validPassword))
+                .email(request.getEmail())
+                .build();
+        TempoUser entityAdminUser = tempoUserRepository.save(adminUser);
+
+        TempoRole adminRole = tempoRoleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: ADMIN"));
+
+        TempoRoleUser adminRoleUser = TempoRoleUser.builder()
+                .role(adminRole)
+                .user(entityAdminUser)
+                .build();
+        TempoRoleUser entityAdminRoleUser = tempoRoleUserRepository.save(adminRoleUser);
+
+        return RegisterAdminResponse.builder()
+                .client(RegisterAdminResponse.AdminClientResponse.builder()
+                                .clientId(entityAdminClient.getId())
+                                .createdAt(Instant.from(entityAdminClient.getCreatedAt()))
+                                .build())
+                .user(RegisterAdminResponse.AdminUserResponse.builder()
+                        .userId(entityAdminUser.getId())
+                        .username(entityAdminUser.getUsername())
+                        .email(entityAdminUser.getEmail())
+                        .createdAt(Instant.from(entityAdminUser.getCreatedAt()))
+                        .build())
+                .roleUser(RegisterAdminResponse.AdminRoleUserResponse.builder()
+                        .roleUserId(entityAdminRoleUser.getId())
+                        .roleId(entityAdminRoleUser.getRoleId())
+                        .roleName(entityAdminRoleUser.getRole().getName())
+                        .userId(entityAdminRoleUser.getUserId())
+                        .username(entityAdminRoleUser.getUser().getUsername())
+                        .build())
                 .build();
     }
 }
