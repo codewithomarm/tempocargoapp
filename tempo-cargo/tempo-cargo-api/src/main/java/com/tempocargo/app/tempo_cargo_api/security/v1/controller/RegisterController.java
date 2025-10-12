@@ -2,9 +2,11 @@ package com.tempocargo.app.tempo_cargo_api.security.v1.controller;
 
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.EmailVerificationRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.OtpVerificationRequest;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterAdminRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.request.RegisterRequest;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.EmailVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.OtpVerificationResponse;
+import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterAdminResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.service.RegisterService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +47,14 @@ public class RegisterController {
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request,
                                                      HttpServletRequest servlet) {
         RegisterResponse response = registerService.register(request, servlet);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<RegisterAdminResponse> registerAdmin(@Valid @RequestBody RegisterAdminRequest request) {
+        RegisterAdminResponse response = registerService.registerAdmin(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
