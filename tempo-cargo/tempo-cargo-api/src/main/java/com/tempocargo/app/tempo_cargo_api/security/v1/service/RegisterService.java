@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
@@ -367,13 +368,13 @@ public class RegisterService {
         return RegisterAdminResponse.builder()
                 .client(RegisterAdminResponse.AdminClientResponse.builder()
                                 .clientId(entityAdminClient.getId())
-                                .createdAt(Instant.from(entityAdminClient.getCreatedAt()))
+                                .createdAt(entityAdminClient.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())
                                 .build())
                 .user(RegisterAdminResponse.AdminUserResponse.builder()
                         .userId(entityAdminUser.getId())
                         .username(entityAdminUser.getUsername())
                         .email(entityAdminUser.getEmail())
-                        .createdAt(Instant.from(entityAdminUser.getCreatedAt()))
+                        .createdAt(entityAdminUser.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())
                         .build())
                 .roleUser(RegisterAdminResponse.AdminRoleUserResponse.builder()
                         .roleUserId(entityAdminRoleUser.getId())
