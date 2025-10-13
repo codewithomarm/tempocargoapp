@@ -69,11 +69,18 @@ public class TempoUser {
     @Column(name = "login_attempts")
     private int loginAttempts = 0;
 
-    @Column(name = "recuperation_token", length = 10)
+    @Column(name = "recuperation_token", length = 6)
     private String recuperationToken;
 
     @Column(name = "recuperation_token_exp_at")
     private LocalDateTime recuperationTokenExpAt;
+
+    @Builder.Default
+    @Column(name = "is_recuperation_token_verified")
+    private Boolean isRecuperationTokenVerified = false;
+
+    @Column(name = "reset_password_request_exp_at")
+    private LocalDateTime resetPasswordRequestExpAt;
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
