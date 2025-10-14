@@ -81,49 +81,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
-
-    @ExceptionHandler(InvalidVerificationTokenException.class)
-    public ResponseEntity<ApiErrorResponse> invalidVerificationTokenExceptionHandler(InvalidVerificationTokenException ex,
-                                                                                     HttpServletRequest request) {
-        ApiErrorResponse error = ApiErrorResponse.builder()
-                .title("Invalid Verification Token")
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .detail(ex.getMessage())
-                .instance(request.getRequestURI())
-                .timestamp(Instant.now())
-                .errors(List.of())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-    }
-
-    @ExceptionHandler(InvalidUsernameException.class)
-    public ResponseEntity<ApiErrorResponse> invalidUsernameExceptionHandler(InvalidUsernameException ex,
-                                                                            HttpServletRequest request) {
-        ApiErrorResponse error = ApiErrorResponse.builder()
-                .title("Invalid Username")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .detail(ex.getMessage())
-                .instance(request.getRequestURI())
-                .timestamp(Instant.now())
-                .errors(List.of())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-    @ExceptionHandler(WeakPasswordException.class)
-    public ResponseEntity<ApiErrorResponse> weakPasswordExceptionHandler(WeakPasswordException ex,
-                                                                         HttpServletRequest request) {
-        ApiErrorResponse error = ApiErrorResponse.builder()
-                .title("Weak Password")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .detail(ex.getMessage())
-                .instance(request.getRequestURI())
-                .timestamp(Instant.now())
-                .errors(List.of())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
 }
