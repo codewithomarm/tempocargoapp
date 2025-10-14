@@ -9,6 +9,8 @@ public interface TempoUserRepository extends JpaRepository<TempoUser, Long> {
 
     Optional<TempoUser> findByUsername(String username);
 
+    Optional<TempoUser> findByEmail(String email);
+
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
