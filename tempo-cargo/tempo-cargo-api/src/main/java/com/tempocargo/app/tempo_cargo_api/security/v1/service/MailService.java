@@ -62,4 +62,26 @@ public class MailService {
         Response response = sg.api(request);
         System.out.println("SendGrid Status: " + response.getStatusCode());
     }
+
+    public void sendForgetPasswordOtp(String toEmail, String otp) throws IOException {
+        Context context = new Context();
+        context.setVariable("otp", otp);
+
+        String htmlContent = templateEngine.process("emails/password-recovery", context);
+
+        Email from = new Email("no-reply@tempocargo.lat");
+        String subject = "Tempo Cargo Account Recovery OTP";
+        Email to = new Email(toEmail);
+        Content content = new Content("text/html", htmlContent);
+        Mail mail = new Mail(from, subject, to, content);
+
+        SendGrid sg = new SendGrid(sendgridApiKey);
+        Request request = new Request();
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
+
+        Response response = sg.api(request);
+        System.out.println("SendGrid Status: " + response.getStatusCode());
+    }
 }

@@ -1,6 +1,6 @@
 package com.tempocargo.app.tempo_cargo_api.security.v1.jwt;
 
-import com.tempocargo.app.tempo_cargo_api.common.v1.exception.InvalidVerificationTokenException;
+import com.tempocargo.app.tempo_cargo_api.security.v1.exception.InvalidVerificationTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
