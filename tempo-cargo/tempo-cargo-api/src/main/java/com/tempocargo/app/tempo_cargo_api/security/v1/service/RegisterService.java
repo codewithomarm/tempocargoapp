@@ -24,6 +24,9 @@ import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.EmailVerifica
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.OtpVerificationResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterAdminResponse;
 import com.tempocargo.app.tempo_cargo_api.security.v1.dto.response.RegisterResponse;
+import com.tempocargo.app.tempo_cargo_api.security.v1.exception.InvalidUsernameException;
+import com.tempocargo.app.tempo_cargo_api.security.v1.exception.InvalidVerificationTokenException;
+import com.tempocargo.app.tempo_cargo_api.security.v1.exception.WeakPasswordException;
 import com.tempocargo.app.tempo_cargo_api.security.v1.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -35,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
