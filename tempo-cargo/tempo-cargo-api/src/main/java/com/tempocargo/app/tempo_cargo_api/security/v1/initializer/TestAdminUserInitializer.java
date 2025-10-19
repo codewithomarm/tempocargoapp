@@ -46,9 +46,9 @@ public class TestAdminUserInitializer implements CommandLineRunner {
         // Persist testUser TempoUser
         TempoUser testUser = TempoUser.builder()
                 .client(entityTestClient)
-                .username("codewithomarm")
+                .username("testadminuser01")
                 .passwordHash(passwordEncoder.encode("password123"))
-                .email("codewithomarm@gmail.com")
+                .email("testadminuser01@gmail.com")
                 .build();
         TempoUser entityTestUser = tempoUserRepository.save(testUser);
 
