@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -69,7 +69,7 @@ public class ForgotPasswordService {
 
         return ForgotPasswordOtpVerificationResponse.builder()
                 .message("Forgot Password OTP verified successfully")
-                .requestExpiresAt(Instant.from(requestExpiresAt))
+                .requestExpiresAt(requestExpiresAt.atZone(ZoneOffset.UTC).toInstant())
                 .build();
     }
 
