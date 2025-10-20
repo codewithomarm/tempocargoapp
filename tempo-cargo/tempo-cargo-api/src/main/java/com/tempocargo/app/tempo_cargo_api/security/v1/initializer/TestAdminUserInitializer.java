@@ -10,6 +10,7 @@ import com.tempocargo.app.tempo_cargo_api.client.v1.client.model.Client;
 import com.tempocargo.app.tempo_cargo_api.client.v1.client.repository.ClientRepository;
 import com.tempocargo.app.tempo_cargo_api.client.v1.clienttype.model.ClientType;
 import com.tempocargo.app.tempo_cargo_api.client.v1.clienttype.repository.ClientTypeRepository;
+import com.tempocargo.app.tempo_cargo_api.common.v1.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -32,7 +33,7 @@ public class TestAdminUserInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Find ClientType in DB
         ClientType clientType = clientTypeRepository.findByCode("INDV")
-                .orElseThrow(() -> new RuntimeException("INDV clientType not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("clientType not found: INDV"));
 
         // Persist TestClient Client
         Client testClient = Client.builder()
@@ -45,15 +46,15 @@ public class TestAdminUserInitializer implements CommandLineRunner {
         // Persist testUser TempoUser
         TempoUser testUser = TempoUser.builder()
                 .client(entityTestClient)
-                .username("codewithomarm")
+                .username("testadminuser01")
                 .passwordHash(passwordEncoder.encode("password123"))
-                .email("codewithomarm@gmail.com")
+                .email("testadminuser01@gmail.com")
                 .build();
         TempoUser entityTestUser = tempoUserRepository.save(testUser);
 
         // Find Role in DB
         TempoRole role = tempoRoleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new RuntimeException("ADMIN Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: ADMIN"));
 
         // Persist testUser-Admin relationship
         TempoRoleUser testRoleUser = TempoRoleUser.builder()

@@ -114,7 +114,9 @@ CREATE TABLE auth.tempo_user (
     last_login_at timestamp(6) without time zone,
     recuperation_token_exp_at timestamp(6) without time zone,
     updated_at timestamp(6) without time zone NOT NULL,
-    recuperation_token character varying(10),
+    recuperation_token character varying(6),
+    is_recuperation_token_verified boolean,
+    reset_password_request_exp_at timestamp(6) without time zone,
     username character varying(30) NOT NULL,
     password_hash character varying(150) NOT NULL,
     email character varying(255) NOT NULL

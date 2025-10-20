@@ -52,6 +52,7 @@ public class WarehouseUS {
 
     @NotBlank(message = "WarehouseUS's countryCode should not be blank")
     @Column(name = "country_code", nullable = false, length = 2)
+    @Builder.Default
     private String countryCode = "US";
 
     @Column(name = "phone_number", length = 15)

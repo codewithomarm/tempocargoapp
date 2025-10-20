@@ -29,9 +29,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login",
                                 "/api/v1/auth/refresh",
-                                "/api/v1/auth/register")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
+                                "/api/v1/auth/forgot-password/email",
+                                "/api/v1/auth/forgot-password/otp",
+                                "/api/v1/auth/forgot-password")
+                                .permitAll()
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/auth/registration",
+                                "/api/v1/auth/registration/email",
+                                "/api/v1/auth/registration/otp")
+                                .permitAll()
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/auth/registration/admin")
+                                .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/auth/logout")
+                                .authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
