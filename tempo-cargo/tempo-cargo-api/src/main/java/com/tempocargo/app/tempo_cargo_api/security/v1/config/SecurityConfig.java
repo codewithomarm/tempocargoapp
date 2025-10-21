@@ -34,6 +34,11 @@ public class SecurityConfig {
                                 "/api/v1/auth/forgot-password")
                                 .permitAll()
 
+                        .requestMatchers("/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html")
+                        .permitAll()
+
                         .requestMatchers(HttpMethod.POST,
                                 "/api/v1/auth/registration",
                                 "/api/v1/auth/registration/email",
