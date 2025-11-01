@@ -42,6 +42,7 @@ public class WarehouseAddress {
 
     @NotNull(message = "WarehouseAddress's isActive should not be null")
     @Column(name = "is_active", nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
 
     @NotNull(message = "WarehouseAddress's createdAt should not be null")
